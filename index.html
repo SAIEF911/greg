@@ -386,6 +386,16 @@ hr.div{border:none;border-top:1px solid var(--g100)}
   .hero-sb{grid-template-columns:1fr}
   .sb-item{grid-template-columns:80px 1fr;padding:1rem 0;border-bottom:1px solid var(--g100)}
 }
+/* DARK MODE */
+body.dark{--cream:#0f0f11;--white:#1a1a1f;--ink:#f0f0f0;--ink-soft:#1a1a1f;--g50:#1a1a1f;--g100:#2a2a30;--g300:#888890;--g500:#aaaaaa;--g700:#cccccc;--ink-mid:#252529}
+.dark .card{background:#1a1a1f}
+.dark .cat-sec{background:#131315}
+.dark .modal-box{background:#1a1a1f}
+.dark .modal-body{color:#cccccc}
+.dark .modal-title{color:#f0f0f0}
+.mode-btn{background:none;border:1px solid var(--g700);color:var(--g300);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;border-radius:2px;font-size:1rem}
+.mode-btn:hover{border-color:var(--white);color:var(--white)}
+```
 </style>
 </head>
 <body>
@@ -430,6 +440,7 @@ hr.div{border:none;border-top:1px solid var(--g100)}
       <li><a href="#">Opinion</a></li>
     </ul>
     <div class="nav-r">
+    <button class="mode-btn" id="modeBtn" onclick="toggleMode()" title="Toggle Dark/Light">🌙</button>
       <a href="#newsletter" class="nav-sub">Subscribe</a>
     </div>
     <button class="hbg" id="hbg"><span></span><span></span><span></span></button>
@@ -1145,6 +1156,19 @@ function changePw(){
   if(p1.length<6){toast('⚠️ Min 6 characters.');return;}
   setPass(p1);document.getElementById('pw1').value='';document.getElementById('pw2').value='';
   toast('✅ Password updated!');
+}
+function toggleMode(){
+  const dark = document.body.classList.toggle('dark');
+  document.getElementById('modeBtn').textContent = dark ? '☀️' : '🌙';
+  localStorage.setItem('tbp_mode', dark ? 'dark' : 'light');
+}
+// load saved mode
+if(localStorage.getItem('tbp_mode')==='dark'){
+  document.body.classList.add('dark');
+  document.addEventListener('DOMContentLoaded',()=>{
+    const b=document.getElementById('modeBtn');
+    if(b) b.textContent='☀️';
+  });
 }
 </script>
 </body>
