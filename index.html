@@ -388,6 +388,25 @@ hr.div{border:none;border-top:1px solid var(--g100)}
   .hero-sb{grid-template-columns:1fr}
   .sb-item{grid-template-columns:80px 1fr;padding:1rem 0;border-bottom:1px solid var(--g100)}
 }
+.modal-overlay{display:none;position:fixed;inset:0;z-index:8500;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);overflow-y:auto;padding:2rem 1rem}
+.modal-overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.modal-box{background:var(--cream);max-width:780px;width:100%;position:relative;animation:fadeUp .35s var(--ease) both}
+.modal-close{position:absolute;top:1rem;right:1rem;width:38px;height:38px;background:var(--ink);color:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;border:none;font-size:1rem;transition:background .2s}
+.modal-close:hover{background:var(--red)}
+.modal-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.modal-img-ph{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#1a1a22,#2e2e3a);display:flex;align-items:center;justify-content:center}
+.modal-img-ph svg{color:rgba(255,255,255,.15);width:48px;height:48px}
+.modal-content{padding:2.5rem clamp(1.5rem,5vw,3rem)}
+.modal-cat{font-family:var(--fn);font-size:.65rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.modal-title{font-family:var(--fd);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;line-height:1.2;color:var(--ink);margin-bottom:1rem}
+.modal-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;font-family:var(--fn);font-size:.72rem;color:var(--g500);margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--g100)}
+.modal-meta .au{font-weight:600;color:var(--g700)}
+.modal-meta .loc{display:flex;align-items:center;gap:.3rem;background:var(--g50);padding:.2rem .6rem}
+.modal-body{font-family:var(--fs);font-size:1rem;font-weight:300;color:var(--g700);line-height:1.8}
+.modal-ext-btn{display:inline-flex;align-items:center;gap:.6rem;margin-top:2rem;font-family:var(--fn);font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--white);background:var(--ink);padding:.8rem 1.6rem;position:relative;overflow:hidden;transition:color .3s;border:1px solid var(--ink)}
+.modal-ext-btn::before{content:'';position:absolute;inset:0;background:var(--red);transform:translateX(-101%);transition:transform .35s var(--ease)}
+.modal-ext-btn:hover::before{transform:translateX(0)}
+.modal-ext-btn span,.modal-ext-btn svg{position:relative;z-index:1}
 </style>
 </head>
 <body>
@@ -1208,6 +1227,47 @@ function changePw(){
   document.getElementById('pw2').value='';
   toast('✅ Password updated!');
 }
+function openModal(n){
+  document.getElementById('modalImg').innerHTML = n.image
+    ? `<img class="modal-img" src="${n.image}" alt=""/>`
+    : `<div class="modal-img-ph"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="14" width="52" height="36" rx="2"/><circle cx="22" cy="28" r="6"/><path d="M6 38l14-10 10 8 10-12 18 16"/></svg></div>`;
+  document.getElementById('modalCat').innerHTML =
+    `<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg> ${n.category||''}`;
+  document.getElementById('modalTitle').textContent = n.title||'';
+  document.getElementById('modalMeta').innerHTML =
+    `${n.author?`<span class="au">${n.author}</span><span>·</span>`:''}
+     <span>${n.time||''}</span>
+     ${n.location?`<span>·</span><span class="loc">
+       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+       ${n.location}</span>`:''}`;
+  document.getElementById('modalBody').textContent = n.summary||'';
+  const extBtn = document.getElementById('modalExtBtn');
+  if(n.url && n.url!=='#'){ extBtn.href=n.url; extBtn.style.display='inline-flex'; }
+  else { extBtn.style.display='none'; }
+  document.getElementById('articleModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('articleModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
 </script>
+<div class="modal-overlay" id="articleModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalImg"></div>
+    <div class="modal-content">
+      <div class="modal-cat" id="modalCat"></div>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <div class="modal-meta" id="modalMeta"></div>
+      <div class="modal-body" id="modalBody"></div>
+      <a id="modalExtBtn" href="#" target="_blank" class="modal-ext-btn" style="display:none;">
+        <span>Read Full Story</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
 </body>
 </html>
